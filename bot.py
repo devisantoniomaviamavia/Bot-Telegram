@@ -1,26 +1,22 @@
-saldo = user_balances.get(user_id, 0)
-    update.message.reply_text(f"💰 Seu saldo: R{saldo:.2f}")
+python
+import sqlite3, os
+from flask import Flask
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
-def sacar(update: Update, context: CallbackContext):
-    update.message.reply_text("Para sacar, envie uma mensagem ao admin com seu número M-Pesa: +258857595392")
+TOKEN = "7999705337:AAHSVp2GmGxitTXGogm_7cwwTzr5tX51NHE"
+ADMIN_ID = 7572728909
+app = Flask(_name_)
 
-def ajuda(update: Update, context: CallbackContext):
-    update.message.reply_text("📌 Use os botões para ver anúncios, verificar saldo ou sacar.\nVocê ganha R$0,25 por anúncio assistido.")
+Banco de dados
+conn = sqlite3.connect("users.db", check_same_thread=False)
+cursor = conn.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, saldo REAL DEFAULT 0)")
+conn.commit()
 
-Flask route para manter vivo
-@app.route('/')
-def home():
-    return "Bot online"
+def add_user(user_id):
+    cursor.execute("INSERT OR IGNORE INTO users (id) VALUES (?)", (user_id,))
+    conn.commit()
 
-if _name_ == '_main_':
-    updater = Updater(TOKEN, use_context=True)
-    dp = updater.dispatcher
-
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("ver_anuncio", ver_anuncio))
-    dp.add_handler(CommandHandler("saldo", saldo))
-    dp.add_handler(CommandHandler("sacar", sacar))
-    dp.add_handler(CommandHandler("ajuda", ajuda))
-
-    updater.start_polling()
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+def update_saldo(user_id, valor):
+    cursor.execute("UPDATE users SET saldo = saldo + ? WHERE id = ?", (valor, user_id))
