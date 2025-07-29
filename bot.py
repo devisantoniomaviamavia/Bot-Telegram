@@ -1,19 +1,26 @@
-from telegram.ext import Updater, CommandHandler
-from flask import Flask
+saldo = user_balances.get(user_id, 0)
+    update.message.reply_text(f"💰 Seu saldo: R{saldo:.2f}")
 
-app = Flask(__name__)
+def sacar(update: Update, context: CallbackContext):
+    update.message.reply_text("Para sacar, envie uma mensagem ao admin com seu número M-Pesa: +258857595392")
 
-def start(update, context):
-    update.message.reply_text("Olá! Bot funcionando.")
+def ajuda(update: Update, context: CallbackContext):
+    update.message.reply_text("📌 Use os botões para ver anúncios, verificar saldo ou sacar.\nVocê ganha R$0,25 por anúncio assistido.")
 
-updater = Updater("7999705337:AAHSVp2GmGxitTXGogm_7cwwTzr5tX51NHE", use_context=True)
-dp = updater.dispatcher
-dp.add_handler(CommandHandler("start", start))
-
+Flask route para manter vivo
 @app.route('/')
 def home():
-    return "Bot está online"
+    return "Bot online"
 
-if __name__ == '__main__':
+if _name_ == '_main_':
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("ver_anuncio", ver_anuncio))
+    dp.add_handler(CommandHandler("saldo", saldo))
+    dp.add_handler(CommandHandler("sacar", sacar))
+    dp.add_handler(CommandHandler("ajuda", ajuda))
+
     updater.start_polling()
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
